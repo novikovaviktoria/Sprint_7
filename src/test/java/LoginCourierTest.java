@@ -11,6 +11,9 @@ import org.junit.Test;
 import org.junit.Before;
 import prakticum.StepsCourier;
 
+import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.CoreMatchers.*;
+
 @Epic("Функционал курьера")
 @Feature("Логин курьера в систему")
 public class LoginCourierTest extends BasementTest{
@@ -36,7 +39,7 @@ public class LoginCourierTest extends BasementTest{
     public void loginCourierAllDataExisted() {
         stepsCourier
                 .loginCourier(courier)
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue());
     }
 
@@ -47,7 +50,7 @@ public class LoginCourierTest extends BasementTest{
         courier.setLogin(null);
         stepsCourier
                 .loginCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
 
@@ -58,7 +61,7 @@ public class LoginCourierTest extends BasementTest{
         courier.setPassword(null);
         stepsCourier
                 .loginCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
 
@@ -69,7 +72,7 @@ public class LoginCourierTest extends BasementTest{
         courier.setLogin(faker.regexify("[a-z]{6}"));
         stepsCourier
                 .loginCourier(courier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 
@@ -80,7 +83,7 @@ public class LoginCourierTest extends BasementTest{
         courier.setPassword(faker.regexify("[a-z0-9]{6}"));
         stepsCourier
                 .loginCourier(courier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 

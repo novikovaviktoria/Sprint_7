@@ -6,11 +6,15 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import prakticum.Order;
 import net.datafaker.Faker;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import prakticum.StepsOrder;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.CoreMatchers.*;
 
 @Epic("Функционал заказа")
 @Feature("Получить список заказов")
@@ -39,9 +43,23 @@ public class ListOfOrdersTest extends BasementTest {
     @Description("Проверить, что система возвращает в тело ответа - список заказов")
     public void getFullListOfOrders() {
         stepsOrder.createOrder(order);
-
         stepsOrder.getListOfOrders()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("orders", notNullValue());
+    }
+
+    @After
+    public void tearDown() {
+        try {
+            Integer track = stepsOrder
+                    .getListOfOrders()
+                    .extract().body().path("track");
+
+            if (track != null) {
+                order.setTrack(track);
+                stepsOrder.cancelOrder(order);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }

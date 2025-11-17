@@ -6,6 +6,7 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import prakticum.Order;
 import net.datafaker.Faker;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,8 @@ import org.junit.runners.Parameterized;
 import prakticum.StepsOrder;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
+import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(Parameterized.class)
 @Epic("Функционал заказа")
@@ -60,7 +63,21 @@ public class CreationOrderTest extends BasementTest {
         order.setColor(colors);
         stepsOrder
                 .createOrder(order)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("track", notNullValue());
+    }
+    @After
+    public void tearDown() {
+        try {
+            Integer track = stepsOrder
+                    .createOrder(order)
+                    .extract().body().path("track");
+
+            if (track != null) {
+                order.setTrack(track);
+                stepsOrder.cancelOrder(order);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }

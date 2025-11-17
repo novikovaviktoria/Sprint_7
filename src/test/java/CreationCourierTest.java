@@ -12,6 +12,9 @@ import org.junit.Before;
 import prakticum.StepsCourier;
 import java.util.Locale;
 
+import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.CoreMatchers.*;
+
 @Epic("Функционал курьера")
 @Feature("Создать курьера")
 public class CreationCourierTest extends BasementTest{
@@ -46,7 +49,7 @@ public class CreationCourierTest extends BasementTest{
     public void createCourierAllDataExisted() {
         stepsCourier
                 .createCourier(courier)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
     }
 
@@ -59,7 +62,7 @@ public class CreationCourierTest extends BasementTest{
 
         stepsCourier
                 .createCourier(courier)
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", equalTo("Этот логин уже используется"));
     }
 
@@ -70,7 +73,7 @@ public class CreationCourierTest extends BasementTest{
         courier.setLogin(null);
         stepsCourier
                 .createCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
@@ -81,7 +84,7 @@ public class CreationCourierTest extends BasementTest{
         courier.setPassword(null);
         stepsCourier
                 .createCourier(courier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
